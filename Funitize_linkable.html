@@ -7228,85 +7228,115 @@ function googleTranslateElementInit() {
 </style>
 
 <script>
+
 document.addEventListener('DOMContentLoaded', function() {
+
   const shareableElements = document.querySelectorAll('section, h2, h3');
-  
-  // Here is the correct class pulled from your HTML file
-  const filterElements = document.querySelectorAll('.blog-filter-btn'); 
-  
+
   const usedIds = new Set(); // Keeps track of IDs so we don't make duplicates
 
+
+
   // Helper function to create a short, punchy alias
+
   function generateShortId(text) {
+
     // Convert to lowercase and remove all punctuation
+
     let cleanText = text.toLowerCase().replace(/[^a-z0-9\s]/g, '');
+
     
+
     // Words we don't need in a URL
+
     const fillerWords = ['the', 'and', 'to', 'a', 'in', 'for', 'is', 'of', 'on', 'with', 'your', 'our', 'it', 'this', 'that', 'how', 'why', 'what', 'are', 'you'];
+
     
+
     // Split into words, remove fillers, and remove empty spaces
+
     let words = cleanText.split(/\s+/).filter(word => word.length > 0 && !fillerWords.includes(word));
+
     
+
     // Keep only the first 3 meaningful words and join with hyphens
+
     return words.slice(0, 3).join('-');
+
   }
 
-  // --- 1. GENERATE SMART IDs FOR SECTIONS ---
+
+
   shareableElements.forEach((el) => {
+
     let finalId = '';
 
+
+
     // 1. Check if you manually set a short name (e.g., data-share-alias="pricing")
+
     const manualAlias = el.getAttribute('data-share-alias');
 
+
+
     if (manualAlias) {
+
       finalId = manualAlias.toLowerCase().replace(/[^a-z0-9-]+/g, '');
+
     } 
+
     // 2. If it already has an ID, keep it
+
     else if (el.id) {
+
       finalId = el.id;
+
     } 
+
     // 3. Otherwise, use the Smart Shortener
+
     else {
+
       let baseAlias = generateShortId(el.textContent);
+
       
+
       // Fallback if the text was ONLY filler words or empty
+
       if (!baseAlias) baseAlias = `section`; 
 
+
+
       finalId = baseAlias;
+
       let counter = 2;
+
       
+
       // Ensure the ID is 100% unique on the page
+
       while (usedIds.has(finalId) || document.getElementById(finalId)) {
+
         finalId = `${baseAlias}-${counter}`;
+
         counter++;
+
       }
+
     }
+
+
 
     // Apply the finalized short ID so the section is strictly linkable
+
     el.id = finalId;
+
     usedIds.add(finalId);
+
   });
 
-  // --- 2. WIRE UP THE BLOG FILTERS ---
-  filterElements.forEach((filter) => {
-    // Run the filter's text through the same generator to find its target ID
-    const targetId = generateShortId(filter.textContent);
-
-    if (targetId) {
-      // If your filter is an <a> tag, we inject the generated ID as the href
-      if (filter.tagName.toLowerCase() === 'a') {
-        filter.href = '#' + targetId;
-      } 
-      // If your filter is a <div>, <span>, or <button>, we make it clickable via Javascript
-      else {
-        filter.style.cursor = 'pointer'; 
-        filter.addEventListener('click', () => {
-          window.location.hash = targetId; 
-        });
-      }
-    }
-  });
 });
+
 </script>
 
 </body>
