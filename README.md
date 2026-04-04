@@ -1,2 +1,2 @@
-# funitize.github.io
+# Funitize
 Funitize – Shopify Animations, Popups &amp; Effects
